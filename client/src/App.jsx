@@ -11,6 +11,8 @@ import { useEffect } from 'react';
 import Home from './pages/Home';
 import MainLayout from './components/layout/MainLayout';
 import NotFoundPage from './components/NotFoundPage';
+import Profile from './pages/user/Profile';
+import EditProfilePage from './components/user/EditProfile';
 
 // Route Protection
 // const ProtectedRoute = ({ children }) => {
@@ -45,7 +47,9 @@ function App() {
 
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
+          <Route path = "/profile/:username" element={<Profile />} />
           <Route path = '*' element={<NotFoundPage/>} />
+          <Route path = "/accounts/edit" element={<EditProfilePage />} />
         </Route>
 
 

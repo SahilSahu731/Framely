@@ -13,6 +13,9 @@ const authSlice = createSlice({
       state.user = action.payload;
       state.isAuthenticated = true;
     },
+    changeProfileStatus(state, action) {
+      state.user.isPrivate = action.payload;
+    },
     logout(state) {
       state.user = null;
       state.isAuthenticated = false;
@@ -20,5 +23,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setUser, logout } = authSlice.actions;
+export const { setUser, logout, changeProfileStatus } = authSlice.actions;
 export default authSlice.reducer;
