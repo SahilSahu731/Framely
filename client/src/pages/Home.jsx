@@ -2,15 +2,19 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import PostCardSkeleton from '../components/PostCardSkeleton';
 import PostCard from '../components/PostCard';
-import StoryCarousel from '../components/StoryCarousel';
+import StoryCarousel from '../components/story/StoryCarousel';
 import Suggestions from '../components/Suggestions';
 import usePosts from '../hooks/usePosts';
+import useStories from '../hooks/useStories';
+import { useOutletContext } from 'react-router-dom';
 
 
 const Home = () => {
   usePosts();
+  useStories();
   const { user } = useSelector((state) => state.auth);
   const {allPosts, isLoading} = useSelector((state) => state.posts)
+
 
   // Simulate data fetching
  if (isLoading) {

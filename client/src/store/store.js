@@ -4,6 +4,8 @@ import authReducer from './slices/authSlice';
 import postReducer from './slices/postSlice';
 import profileReducer from './slices/ProfileSlice';
 import notificationReducer from './slices/notificationSlice';
+import storyReducer from './slices/storySlice';
+import uiReducer from './slices/uiSlice';
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
 
 const rootReducer = combineReducers({
@@ -11,6 +13,8 @@ const rootReducer = combineReducers({
     posts : postReducer,
     profile : profileReducer,
     notifications : notificationReducer,
+    stories : storyReducer,
+    ui : uiReducer,
 
 })
 

@@ -14,19 +14,20 @@ import {
   Menu,
   Image,
   Film,
+  VideoIcon,
 } from "lucide-react";
 import useNotifications from "../../hooks/useNotifications";
-import { markAllAsRead } from "../../store/slices/notificationSlice";
-import axios from "axios";
-import { NOTIFICATION_API_URL } from "../../utils/constant";
-import NotificationPanel from "../notification/NotificationPanel";
+import {
+  openCreatePostModal,
+  openCreateStoryModal,
+} from "../../store/slices/uiSlice";
 
 // The Sidebar now accepts a prop to open the modal
-const Sidebar = ({ openCreateModal }) => {
+const Sidebar = () => {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const { unreadCount } = useSelector((state) => state.notifications);
-  const [isNotificationPanelOpen, setNotificationPanelOpen] = useState(false);
+  // const [isNotificationPanelOpen, setNotificationPanelOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -91,8 +92,13 @@ const Sidebar = ({ openCreateModal }) => {
               </NavLink>
             </li>
           ))}
-            <li>
-            <NavLink to="/notifications" className={({ isActive }) => isActive ? activeLinkStyle : normalLinkStyle}>
+          <li>
+            <NavLink
+              to="/notifications"
+              className={({ isActive }) =>
+                isActive ? activeLinkStyle : normalLinkStyle
+              }
+            >
               <div className="relative">
                 <HeartIcon />
                 {unreadCount > 0 && (
@@ -111,16 +117,21 @@ const Sidebar = ({ openCreateModal }) => {
               <PlusSquare />
               <span className="font-semibold">Create</span>
             </button>
-            <div className="absolute hidden group-hover:block top-0 group left-64 top-10  ml-2 w-56 bg-gray-700 rounded-lg shadow-lg py-2">
+            <div className="absolute hidden group-hover:block group left-56 top-5  ml-2 w-56 bg-gray-700 rounded-lg shadow-lg py-2">
               <button
                 onClick={() => {
-                  openCreateModal(); // Call the function from props
+                  dispatch(openCreatePostModal()); // Dispatch action to open
                 }}
                 className="w-full text-left px-4 py-2 text-sm hover:bg-gray-600 flex justify-between items-center"
               >
                 Create Post <Image size={18} />
               </button>
-              <button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-600 flex justify-between items-center text-gray-500 cursor-not-allowed">
+              <button
+                onClick={() => {
+                  dispatch(openCreateStoryModal()); // Dispatch action to open
+                }}
+                className="w-full text-left px-4 py-2 text-sm hover:bg-gray-600 flex justify-between items-center"
+              >
                 Add a Story <Film size={18} />
               </button>
             </div>

@@ -40,13 +40,12 @@ export const addStory = async (req, res) => {
 
 export const getStoriesFeed = async (req, res) => {
     try {
-        const currentUser = req.user;
-        const followingIds = currentUser.following;
+        const stories = await Story.find({})
+            .populate('author', 'username profilePicture')
+            .sort({ createdAt: -1 }); // Sort to show newest user updates first
 
-        const stories = await Story.find({ author: { $in: followingIds } })
-            .populate('author', 'username profilePicture');
+        return res.status(200).json({ success: true, stories });
 
-        res.status(200).json({ success: true, stories });
     } catch (error) {
         console.error('Error fetching stories feed:', error);
         return res.status(500).json({ success: false, message: 'Internal server error.' });
