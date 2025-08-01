@@ -18,6 +18,7 @@ export const SocketContextProvider = ({ children }) => {
         query: {
           userId: authUser._id,
         },
+        withCredentials : true
       });
 
       setSocket(newSocket);

@@ -23,7 +23,7 @@ const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: process.env.CLIENT_URL,
     credentials: true,
   },
 });
@@ -35,7 +35,8 @@ app.use(morgan('dev'));
 app.use(helmet());
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: process.env.CLIENT_URL,
+     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
 );
