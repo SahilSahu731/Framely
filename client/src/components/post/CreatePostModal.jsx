@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { X, ImageUp } from 'lucide-react';
+import { POST_API_URL } from '../../utils/constant';
 
 const CreatePostModal = ({ isOpen, onClose }) => {
   const [caption, setCaption] = useState('');
@@ -31,23 +32,27 @@ const CreatePostModal = ({ isOpen, onClose }) => {
 
     const toastId = toast.loading('Creating post...');
     try {
-      const { data } = await axios.post('/api/posts/create', apiFormData, {
+      const { data } = await axios.post(`${POST_API_URL}/create`, apiFormData, {
         headers: { 'Content-Type': 'multipart/form-data' },
         withCredentials: true,
       });
       if (data.success) {
         toast.success(data.message, { id: toastId });
+        setPreviewUrl('')
+        setSelectedFile(null)
+        setCaption('')
         onClose(); // Close modal on success
         // You might want to refresh the feed here or navigate to the new post
       }
     } catch (error) {
       toast.error('Failed to create post.', { id: toastId });
+      console.log(error)
     }
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70" onClick={onClose}>
-      <div className="bg-gray-800 rounded-xl shadow-lg w-full max-w-lg text-white" onClick={(e) => e.stopPropagation()}>
+      <div className="bg-gray-800 rounded-xl shadow-lg w-full max-w-xl text-white" onClick={(e) => e.stopPropagation()}>
         <div className="flex justify-between items-center p-4 border-b border-gray-700">
           <h2 className="text-xl font-semibold">Create new post</h2>
           <X className="cursor-pointer" onClick={onClose} />
@@ -64,7 +69,7 @@ const CreatePostModal = ({ isOpen, onClose }) => {
           ) : (
             <div className="flex flex-col md:flex-row gap-4">
               <img src={previewUrl} alt="Post preview" className="md:w-1/2 w-full h-auto object-cover rounded-lg" />
-              <div className="flex-grow">
+              <div className="flex-grow bg-gray-700 p-4 rounded-lg w-fit">
                 <textarea
                   value={caption}
                   onChange={(e) => setCaption(e.target.value)}

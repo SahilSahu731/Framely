@@ -4,64 +4,39 @@ import PostCardSkeleton from '../components/PostCardSkeleton';
 import PostCard from '../components/PostCard';
 import StoryCarousel from '../components/StoryCarousel';
 import Suggestions from '../components/Suggestions';
-
-// --- Static Data for Demonstration ---
-const staticPosts = [
-  {
-    username: "alex_doe",
-    avatar: "https://i.pravatar.cc/150?u=alex_doe",
-    postImage: "https://picsum.photos/seed/picsum1/800/600",
-    caption: "Beautiful sunset at the beach! 🌅",
-  },
-  {
-    username: "samantha_g",
-    avatar: "https://i.pravatar.cc/150?u=samantha_g",
-    postImage: "https://picsum.photos/seed/picsum2/800/600",
-    caption: "Exploring the city streets. 🏙️",
-  },
-];
+import usePosts from '../hooks/usePosts';
 
 
 const Home = () => {
+  usePosts();
   const { user } = useSelector((state) => state.auth);
-  const [isLoading, setIsLoading] = useState(true);
+  const {allPosts, isLoading} = useSelector((state) => state.posts)
 
   // Simulate data fetching
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2500); // 2.5 second loading simulation
-
-    return () => clearTimeout(timer);
-  }, []);
-
-
-  return (
-     <div className="w-full flex justify-center">
-      <div className="flex-grow max-w-2xl">
+ if (isLoading) {
+    return (
+      <div className="w-full pt-6">
         <StoryCarousel />
-
-        <div className="space-y-6">
-          {isLoading ? (
-            <>
-              <PostCardSkeleton />
-              <PostCardSkeleton />
-            </>
-          ) : (
-            staticPosts.map((post, index) => (
-              <PostCard
-                key={index}
-                username={post.username}
-                avatar={post.avatar}
-                postImage={post.postImage}
-                caption={post.caption}
-              />
-            ))
-          )}
+        <div className="space-y-6 mt-6">
+          <PostCardSkeleton />
+          <PostCardSkeleton />
         </div>
       </div>
-      <div className='w-80 p-4 text-white -mr-20'>
-        <Suggestions />
+    );
+  }
+
+  return (
+      <div className="w-full pt-6">
+      <StoryCarousel />
+      <div className="space-y-6 mt-6">
+        {allPosts.length > 0 ? (
+          allPosts.map((post) => <PostCard key={post._id} post={post} />)
+        ) : (
+          <div className="text-center text-gray-400 mt-10">
+            <p>No posts yet.</p>
+            <p>Follow someone or create your first post!</p>
+          </div>
+        )}
       </div>
     </div>
   );

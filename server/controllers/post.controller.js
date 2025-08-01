@@ -77,3 +77,20 @@ export const addComment = async (req, res) => {
     return res.status(500).json({ success: false, message: 'Internal server error.' });
   }
 };
+
+export const getAllPosts = async (req, res) => {
+  try {
+    const posts = await Post.find()
+      .sort({ createdAt: -1 }) // Show newest posts first
+      .populate('author', 'username profilePicture') // Populate the post author's details
+      .populate('comments.author', 'username profilePicture'); // Populate the author for each comment
+
+    return res.status(200).json({
+      success: true,
+      posts,
+    });
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+    return res.status(500).json({ success: false, message: 'Internal server error.' });
+  }
+};

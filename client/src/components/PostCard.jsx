@@ -32,12 +32,12 @@ const PostCard = ({ post }) => {
   };
 
   return (
-    <div className="w-full max-w-xl mx-auto bg-gray-800 rounded-xl shadow-md overflow-hidden mb-6 text-white">
+    <div className="w-full max-w-md md:max-w-2xl mx-auto bg-gray-800 rounded-xl shadow-md overflow-hidden mb-6 text-white">
       {/* Card Header */}
       <div className="p-4 flex items-center">
         <img
           className="h-10 w-10 rounded-full object-cover"
-          src={post.author.profilePicture} // Assuming author is populated
+          src={post.author.profilePicture}
           alt={`${post.author.username}'s avatar`}
         />
         <p className="ml-3 font-semibold">{post.author.username}</p>

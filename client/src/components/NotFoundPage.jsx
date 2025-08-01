@@ -11,7 +11,7 @@ const NotFoundPage = () => {
             <p className='text-sm text-white'>
                 This page is not available.
             </p>
-            <button className='mt-8 ml-[550px] text-left justify-end bg-sky-800  px-4 py-3 rounded-xl'>
+            <button className='mt-8  text-left justify-end bg-sky-800  px-4 py-3 rounded-xl'>
                 <Link to='/'>
                     <span className='text-white'>Go back to home</span>
                 </Link>
