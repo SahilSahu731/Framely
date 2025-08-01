@@ -1,5 +1,6 @@
 import Notification from "../models/notification.model.js";
 import Post from "../models/post.model.js";
+import User from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { v2 as cloudinary } from 'cloudinary';
 
@@ -198,6 +199,36 @@ export const getPostById = async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching single post:', error);
+    return res.status(500).json({ success: false, message: 'Internal server error.' });
+  }
+};
+
+export const getExploreFeed = async (req, res) => {
+  try {
+    const currentUser = await User.findById(req.user._id);
+    const followingIds = currentUser.following;
+
+    const posts = await Post.find({ author: { $nin: [...followingIds, req.user._id] } })
+      .sort({ 'likes.length': -1, createdAt: -1 }) 
+      .limit(20)
+      .populate('author', 'username profilePicture');
+
+    const aggregatedPosts = await Post.aggregate([
+      { $match: { author: { $nin: [...followingIds, req.user._id] } } },
+      { $addFields: { likesCount: { $size: '$likes' } } }, // Create a temporary field for likes count
+      { $sort: { likesCount: -1, createdAt: -1 } }, // Sort by the new field
+      { $limit: 20 },
+    ]);
+
+    const explorePosts = await Post.populate(aggregatedPosts, {
+      path: 'author',
+      select: 'username profilePicture',
+    });
+
+    return res.status(200).json({ success: true, posts: explorePosts });
+
+  } catch (error) {
+    console.error('Error fetching explore feed:', error);
     return res.status(500).json({ success: false, message: 'Internal server error.' });
   }
 };

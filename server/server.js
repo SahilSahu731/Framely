@@ -14,6 +14,7 @@ import authRoutes from "./routes/auth.route.js";
 import postRoutes from "./routes/post.route.js";
 import userRoutes from "./routes/user.route.js";
 import notificationRoutes from './routes/notification.route.js';
+import storyRoutes from './routes/story.routes.js';
 import connectDB from "./config/db.js";
 
 dotenv.config();
@@ -53,6 +54,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/stories", storyRoutes);
 
 
 

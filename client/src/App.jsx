@@ -16,6 +16,7 @@ import EditProfilePage from './components/user/EditProfile';
 import SinglePost from './pages/SinglePost';
 import SearchPage from './pages/SearchPage';
 import NotificationPage from './pages/NotificationPage';
+import ExplorePage from './pages/ExplorePage';
 
 // Route Protection
 // const ProtectedRoute = ({ children }) => {
@@ -56,6 +57,7 @@ function App() {
           <Route path="/post/:postId" element={<SinglePost />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/notifications" element={<NotificationPage />} />
+           <Route path="/explore" element={<ExplorePage />} />
         </Route>
 
 
