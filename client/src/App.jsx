@@ -47,6 +47,12 @@ function App() {
     }
   }, [user]);
 
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    }
+  }, [user]);
+
   return (
     <Routes>
       {/* Authentication Routes */}
