@@ -2,44 +2,66 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
-import { setSelectedConversation } from "../store/slices/chatSlice"; // Assuming chatSlice exists
-import MessageContainer from "../components/messages/MessageContainer"; // We will create this
-import { USER_API_URL } from "../utils/constant";
+import { setSelectedConversation } from "../store/slices/chatSlice";
+import MessageContainer from "../components/messages/MessageContainer";
 import NewMessageModal from "../components/messages/NewMessageModal";
 import { MessageSquarePlus } from "lucide-react";
+import { USER_API_URL } from "../utils/constant";
 
 const MessagesPage = () => {
-  const [conversations, setConversations] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const { selectedConversation } = useSelector((state) => state.chat); // Assuming chatSlice exists
-  const dispatch = useDispatch();
-  const { id } = useParams(); // To get the user ID from the URL
+    const [conversations, setConversations] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const { selectedConversation } = useSelector(state => state.chat);
+    const dispatch = useDispatch();
+    const { id } = useParams(); // The ID of the user to chat with from the URL
 
-  useEffect(() => {
-    const getConversations = async () => {
-      try {
-        // This is a new endpoint we need to create
-        const { data } = await axios.get(`${USER_API_URL}/conversations`, {
-          withCredentials: true,
-        });
-        setConversations(data);
-      } catch (error) {
-        console.error("Error fetching conversations", error);
-      }
-    };
-    getConversations();
-  }, []);
+    // Fetch existing conversations for the sidebar
+    useEffect(() => {
+        const getConversations = async () => {
+            try {
+                const { data } = await axios.get(`${USER_API_URL}/conversations`, { withCredentials: true });
+                setConversations(data);
+            } catch (error) {
+                console.error("Error fetching conversations", error);
+            }
+        };
+        getConversations();
+    }, []);
+    
+    // This is the key logic to handle selecting a conversation
+    useEffect(() => {
+        const findOrCreateConversation = async () => {
+            if (!id) return; // Do nothing if there's no ID in the URL
 
-  // Set the selected conversation based on the URL parameter
-  useEffect(() => {
-    if (id && conversations.length > 0) {
-      const conversation = conversations.find((c) => c._id === id);
-      dispatch(setSelectedConversation(conversation));
-    }
-  }, [id, conversations, dispatch]);
+            setLoading(true);
+            // 1. Check if the user is in our existing conversation list
+            const existingConversationUser = conversations.find(c => c._id === id);
 
-  return (
-     <>
+            if (existingConversationUser) {
+                dispatch(setSelectedConversation(existingConversationUser));
+            } else {
+                // 2. If not, it's a new chat. Fetch that user's details.
+                try {
+                    const { data: newUser } = await axios.get(`${USER_API_URL}/${id}`, { withCredentials: true });
+                    dispatch(setSelectedConversation(newUser));
+                    // Optional: Add them to the conversation list for a better UI experience
+                    if (!conversations.some(c => c._id === newUser._id)) {
+                        setConversations(prev => [newUser, ...prev]);
+                    }
+                } catch (error) {
+                    console.error("Failed to fetch user for new chat", error);
+                }
+            }
+            setLoading(false);
+        };
+
+        findOrCreateConversation();
+
+    }, [id, conversations, dispatch]);
+
+    return (
+        <>
             <div className="flex h-[calc(100vh-theme(space.24))] text-white bg-gray-900">
                 <div className="w-1/3 border-r border-gray-700 overflow-y-auto flex flex-col">
                     <div className="p-4 border-b border-gray-700 flex justify-between items-center">
@@ -52,7 +74,7 @@ const MessagesPage = () => {
                     {conversations.length > 0 ? (
                         conversations.map(user => (
                             <Link to={`/messages/${user._id}`} key={user._id}>
-                                <div className={`p-4 flex items-center space-x-3 hover:bg-gray-700 ${selectedConversation?._id === user._id ? 'bg-gray-700' : ''}`}>
+                                <div className={`p-4 flex items-center space-x-3 hover:bg-sky-500 mb-3 rounded-md mr-2 ${selectedConversation?._id === user._id ? 'bg-sky-600' : ''}`}>
                                     <img src={user.profilePicture} alt={user.username} className="w-12 h-12 rounded-full"/>
                                     <div><p className="font-semibold">{user.username}</p></div>
                                 </div>
@@ -67,12 +89,16 @@ const MessagesPage = () => {
                 </div>
 
                 <div className="w-2/3">
-                    <MessageContainer />
+                    {loading ? (
+                        <div className="flex items-center justify-center h-full">Loading chat...</div>
+                    ) : (
+                        <MessageContainer />
+                    )}
                 </div>
             </div>
             <NewMessageModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
         </>
-  );
+    );
 };
 
 export default MessagesPage;

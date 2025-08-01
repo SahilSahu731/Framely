@@ -24,6 +24,7 @@ import SearchPage from "./pages/SearchPage";
 import NotificationPage from "./pages/NotificationPage";
 import ExplorePage from "./pages/ExplorePage";
 import MessagesPage from "./pages/MessagesPage";
+import MoreForYou from "./pages/MoreForYou";
 
 // Route Protection
 // const ProtectedRoute = ({ children }) => {
@@ -65,6 +66,7 @@ function App() {
         <Route path="messages" element={<MessagesPage />} />
         <Route path="messages/:id" element={<MessagesPage />} />
         <Route path="*" element={<NotFoundPage />} />
+        <Route path="more" element={<MoreForYou />} />
       </Route>
 
       {/* Admin Routes */}

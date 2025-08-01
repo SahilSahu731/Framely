@@ -155,10 +155,12 @@ const Sidebar = () => {
         </ul>
       </nav>
       <div>
-        <button className="w-full text-left py-3 px-2 rounded-md hover:bg-gray-700 font-semibold flex items-center space-x-4">
-          <Menu />
-          <span>More</span>
-        </button>
+        <Link to="/more">
+          <button className="w-full text-left py-3 px-2 rounded-md hover:bg-gray-700 font-semibold flex items-center space-x-4">
+            <Menu />
+            <span>More</span>
+          </button>
+        </Link>
         <button
           onClick={handleLogout}
           className="w-full text-left py-3 px-2 rounded-md hover:bg-gray-700 font-semibold flex items-center space-x-4"
