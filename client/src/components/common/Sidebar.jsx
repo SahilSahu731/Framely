@@ -13,9 +13,6 @@ const Sidebar = ({ openCreateModal }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // State to manage the visibility of the "Create" popover menu
-  const [isCreateMenuOpen, setCreateMenuOpen] = useState(false);
-
   const handleLogout = () => {
     dispatch(logout());
     navigate('/login');
@@ -32,6 +29,8 @@ const Sidebar = ({ openCreateModal }) => {
 
   const activeLinkStyle = "flex items-center mt-2 mb-2 space-x-4 py-3 px-2 rounded-md bg-gray-700";
   const normalLinkStyle = "flex items-center mt-2 mb-2 space-x-4 py-3 px-2 rounded-md hover:bg-gray-700";
+
+
 
   return (
     <aside className="w-80 fixed top-0 left-0 min-h-screen bg-gray-800 text-white p-4 flex flex-col">
@@ -61,20 +60,17 @@ const Sidebar = ({ openCreateModal }) => {
           ))}
 
           {/* --- Create Button with Popover --- */}
-          <li className="relative">
+          <li className="relative group">
             <button
-              onClick={() => setCreateMenuOpen(!isCreateMenuOpen)}
-              className={`${normalLinkStyle} w-full`}
+              className={`${normalLinkStyle} w-full  `}
             >
               <PlusSquare />
               <span className="font-semibold">Create</span>
             </button>
-            {isCreateMenuOpen && (
-              <div className="absolute bottom-0 left-full ml-2 w-56 bg-gray-700 rounded-lg shadow-lg py-2">
+              <div className="absolute hidden group-hover:block top-0 group left-64 top-10  ml-2 w-56 bg-gray-700 rounded-lg shadow-lg py-2">
                 <button
                   onClick={() => {
                     openCreateModal(); // Call the function from props
-                    setCreateMenuOpen(false); // Close the menu
                   }}
                   className="w-full text-left px-4 py-2 text-sm hover:bg-gray-600 flex justify-between items-center"
                 >
@@ -84,7 +80,6 @@ const Sidebar = ({ openCreateModal }) => {
                   Add a Story <Film size={18} />
                 </button>
               </div>
-            )}
           </li>
 
           <li key="Profile">
@@ -92,7 +87,7 @@ const Sidebar = ({ openCreateModal }) => {
               to={`/profile/${user?.username}`}
               className={({ isActive }) => isActive ? activeLinkStyle : normalLinkStyle}
             >
-              <User />
+              <img src={user?.profilePicture} alt="Profile Picture" className="h-6 w-6 rounded-full" />
               <span className="font-semibold">Profile</span>
             </NavLink>
           </li>

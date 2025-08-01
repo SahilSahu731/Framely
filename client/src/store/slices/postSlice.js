@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   allPosts: [],
@@ -7,7 +7,7 @@ const initialState = {
 };
 
 const postSlice = createSlice({
-  name: 'posts',
+  name: "posts",
   initialState,
   reducers: {
     setLoading: (state, action) => {
@@ -29,9 +29,36 @@ const postSlice = createSlice({
         state.allPosts[postIndex].comments.push(comment);
       }
     },
+    toggleLike: (state, action) => {
+      const { postId, userId } = action.payload;
+      const post = state.allPosts.find((p) => p._id === postId);
+
+      if (post) {
+        const isLiked = post.likes.includes(userId);
+        if (isLiked) {
+          // If liked, remove the userId from the likes array
+          post.likes = post.likes.filter((id) => id !== userId);
+        } else {
+          // If not liked, add the userId to the likes array
+          post.likes.push(userId);
+        }
+      }
+    },
+    deletePostFromState: (state, action) => {
+      const postId = action.payload;
+      state.allPosts = state.allPosts.filter((post) => post._id !== postId);
+    },
   },
 });
 
-export const { setLoading, setPosts, setError, addPost, addCommentToPost } = postSlice.actions;
+export const {
+  setLoading,
+  setPosts,
+  setError,
+  addPost,
+  addCommentToPost,
+  deletePostFromState,
+  toggleLike,
+} = postSlice.actions;
 
 export default postSlice.reducer;

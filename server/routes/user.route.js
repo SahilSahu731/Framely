@@ -1,0 +1,14 @@
+import express from 'express';
+import { getUserProfile, followUnfollowUser } from '../controllers/user.controller.js';
+import { protect } from '../middleware/auth.middleware.js';
+
+const router = express.Router();
+
+// All routes in this file require the user to be logged in
+router.use(protect);
+
+// The order is important: dynamic routes should come after static ones if they conflict
+router.get('/profile/:username', getUserProfile);
+router.post('/follow/:userId', followUnfollowUser);
+
+export default router;

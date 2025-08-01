@@ -9,6 +9,7 @@ import cors from "cors";
 
 import authRoutes from "./routes/auth.route.js";
 import postRoutes from "./routes/post.route.js";
+import userRoutes from "./routes/user.route.js";
 import connectDB from "./config/db.js";
 
 dotenv.config();
@@ -31,6 +32,7 @@ app.use(
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
+app.use("/api/users", userRoutes);
 
 
 // Database Connection

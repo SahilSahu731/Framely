@@ -52,7 +52,7 @@ const CreatePostModal = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70" onClick={onClose}>
-      <div className="bg-gray-800 rounded-xl shadow-lg w-full max-w-xl text-white" onClick={(e) => e.stopPropagation()}>
+      <div className="bg-gray-800 rounded-xl shadow-lg w-full max-w-xl md:max-w-3xl h-3/5 text-white" onClick={(e) => e.stopPropagation()}>
         <div className="flex justify-between items-center p-4 border-b border-gray-700">
           <h2 className="text-xl font-semibold">Create new post</h2>
           <X className="cursor-pointer" onClick={onClose} />
@@ -60,7 +60,7 @@ const CreatePostModal = ({ isOpen, onClose }) => {
         <div className="p-4">
           {!previewUrl ? (
             <div
-              className="flex flex-col items-center justify-center h-80 bg-gray-900 rounded-lg border-2 border-dashed border-gray-600 cursor-pointer"
+              className="flex flex-col items-center justify-center h-96 mb-10 bg-gray-900 rounded-lg  border-2 border-dashed border-gray-600 cursor-pointer"
               onClick={() => fileInputRef.current.click()}
             >
               <ImageUp size={48} className="text-gray-500 mb-4" />
@@ -68,7 +68,7 @@ const CreatePostModal = ({ isOpen, onClose }) => {
             </div>
           ) : (
             <div className="flex flex-col md:flex-row gap-4">
-              <img src={previewUrl} alt="Post preview" className="md:w-1/2 w-full h-auto object-cover rounded-lg" />
+              <img src={previewUrl} alt="Post preview" className="md:w-1/2 mb-10 w-full h-96 object-cover rounded-lg" />
               <div className="flex-grow bg-gray-700 p-4 rounded-lg w-fit">
                 <textarea
                   value={caption}

@@ -1,6 +1,6 @@
 import Post from "../models/post.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
-
+import { v2 as cloudinary } from 'cloudinary';
 
 export const createPost = async (req, res) => {
   try {
@@ -20,7 +20,10 @@ export const createPost = async (req, res) => {
     const newPost = await Post.create({
       author: req.user._id, // From  middleware
       caption,
-      imageUrl: image.secure_url,
+       image: {
+        url: image.secure_url,
+        public_id: image.public_id,
+      },
     });
 
     return res.status(201).json({
@@ -91,6 +94,63 @@ export const getAllPosts = async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching posts:', error);
+    return res.status(500).json({ success: false, message: 'Internal server error.' });
+  }
+};
+
+export const toggleLikeOnPost = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const userId = req.user._id;
+
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({ success: false, message: 'Post not found.' });
+    }
+
+    // Check if the user has already liked the post
+    const isLiked = post.likes.includes(userId);
+
+    if (isLiked) {
+      // If already liked, unlike it
+      await Post.findByIdAndUpdate(postId, { $pull: { likes: userId } });
+      res.status(200).json({ success: true, message: 'Post unliked.' });
+    } else {
+      // If not liked, like it
+      await Post.findByIdAndUpdate(postId, { $addToSet: { likes: userId } }); // $addToSet prevents duplicate likes
+      res.status(200).json({ success: true, message: 'Post liked.' });
+    }
+  } catch (error) {
+    console.error('Error toggling like on post:', error);
+    return res.status(500).json({ success: false, message: 'Internal server error.' });
+  }
+};
+
+export const deletePost = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({ success: false, message: 'Post not found.' });
+    }
+
+    // Security Check: Only the author can delete their post
+    if (post.author.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ success: false, message: 'Unauthorized action.' });
+    }
+
+    // Delete image from Cloudinary
+    await cloudinary.uploader.destroy(post.image.public_id);
+
+    // Delete post from the database
+    await post.deleteOne();
+
+    return res.status(200).json({ success: true, message: 'Post deleted successfully.' });
+
+  } catch (error) {
+    console.error('Error deleting post:', error);
     return res.status(500).json({ success: false, message: 'Internal server error.' });
   }
 };

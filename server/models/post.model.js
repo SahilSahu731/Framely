@@ -3,9 +3,15 @@ import mongoose from 'mongoose';
 
 const postSchema = new mongoose.Schema(
   {
-    imageUrl: {
-      type: String,
-      required: true,
+     image: {
+      url: {
+        type: String, // URL from Cloudinary
+        required: true,
+      },
+      public_id: {
+        type: String, // The ID needed to delete from Cloudinary
+        required: true,
+      },
     },
     caption: {
       type: String,
