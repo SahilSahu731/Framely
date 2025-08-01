@@ -1,6 +1,7 @@
 import User from '../models/user.model.js';
 import Post from '../models/post.model.js';
 import Notification from '../models/notification.model.js';
+import Conversation from '../models/conversation.model.js';
 
 
 export const getUserProfile = async (req, res) => {
@@ -88,4 +89,42 @@ export const searchUsers = async (req, res) => {
     console.error('Error searching users:', error);
     return res.status(500).json({ success: false, message: 'Internal server error.' });
   }
+};
+
+export const getUsersForSidebar = async (req, res) => {
+    try {
+        const loggedInUserId = req.user._id;
+
+        // Find all conversations the user is a part of
+        const conversations = await Conversation.find({
+            participants: loggedInUserId,
+        }).populate({
+            path: 'participants',
+            select: 'username profilePicture', // Select fields for the other user
+        });
+
+        // Filter out the current user from participants list to get the other user's info
+        const users = conversations.map(conv => {
+            return conv.participants.find(p => p._id.toString() !== loggedInUserId.toString());
+        });
+
+        res.status(200).json(users);
+    } catch (error) {
+        console.error("Error in getUsersForSidebar: ", error.message);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+export const getAllUsers = async (req, res) => {
+    try {
+        const loggedInUserId = req.user._id;
+
+        // Find all users except the current one
+        const allUsers = await User.find({ _id: { $ne: loggedInUserId } }).select("-password");
+
+        res.status(200).json(allUsers);
+    } catch (error) {
+        console.error("Error in getAllUsers: ", error.message);
+        res.status(500).json({ error: "Internal server error" });
+    }
 };

@@ -6,6 +6,7 @@ import profileReducer from './slices/ProfileSlice';
 import notificationReducer from './slices/notificationSlice';
 import storyReducer from './slices/storySlice';
 import uiReducer from './slices/uiSlice';
+import chatReducer from './slices/chatSlice';
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
 
 const rootReducer = combineReducers({
@@ -15,7 +16,7 @@ const rootReducer = combineReducers({
     notifications : notificationReducer,
     stories : storyReducer,
     ui : uiReducer,
-
+    chat : chatReducer,
 })
 
 const persistConfig = {

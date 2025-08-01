@@ -5,7 +5,7 @@ import { AUTH_API_URL } from "../../utils/constant";
 import { changeProfileStatus, setUser } from "../../store/slices/authSlice";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import ChangeProfilePhotoDialog from "./ChangeProfilePhotoDialog";
+import ChangeProfilePhotoDialog from "../../components/user/ChangeProfilePhotoDialog";
 
 const EditProfilePage = () => {
   const { user } = useSelector((state) => state.auth);
