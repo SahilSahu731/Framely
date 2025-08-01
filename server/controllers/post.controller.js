@@ -154,3 +154,24 @@ export const deletePost = async (req, res) => {
     return res.status(500).json({ success: false, message: 'Internal server error.' });
   }
 };
+
+export const getPostById = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const post = await Post.findById(postId)
+      .populate('author', 'username profilePicture')
+      .populate('comments.author', 'username profilePicture');
+
+    if (!post) {
+      return res.status(404).json({ success: false, message: 'Post not found.' });
+    }
+
+    return res.status(200).json({
+      success: true,
+      post,
+    });
+  } catch (error) {
+    console.error('Error fetching single post:', error);
+    return res.status(500).json({ success: false, message: 'Internal server error.' });
+  }
+};

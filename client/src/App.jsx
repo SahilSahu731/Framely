@@ -13,6 +13,7 @@ import MainLayout from './components/layout/MainLayout';
 import NotFoundPage from './components/NotFoundPage';
 import Profile from './pages/user/Profile';
 import EditProfilePage from './components/user/EditProfile';
+import SinglePost from './pages/SinglePost';
 
 // Route Protection
 // const ProtectedRoute = ({ children }) => {
@@ -50,6 +51,7 @@ function App() {
           <Route path = "/profile/:username" element={<Profile />} />
           <Route path = '*' element={<NotFoundPage/>} />
           <Route path = "/accounts/edit" element={<EditProfilePage />} />
+          <Route path="/post/:postId" element={<SinglePost />} />
         </Route>
 
 

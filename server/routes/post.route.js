@@ -1,7 +1,7 @@
 import express from 'express';
 import { protect } from '../middleware/auth.middleware.js';
 import { upload } from '../middleware/multer.js';
-import { addComment, createPost, deletePost, getAllPosts, toggleLikeOnPost } from '../controllers/post.controller.js';
+import { addComment, createPost, deletePost, getAllPosts, getPostById, toggleLikeOnPost } from '../controllers/post.controller.js';
 
 const router = express.Router();
 
@@ -19,5 +19,6 @@ router.post('/:postId/like', toggleLikeOnPost);
 
 router.delete('/:postId', deletePost);
 
+router.get('/:postId', getPostById);
 
 export default router;
