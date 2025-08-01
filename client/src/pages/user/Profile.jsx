@@ -8,7 +8,7 @@ import {
   setProfileError,
   toggleFollow,
 } from "../../store/slices/ProfileSlice";
-import { Settings, Grid3x3, Bookmark, UserSquare2 } from "lucide-react";
+import { Settings, Grid3x3, Bookmark, UserSquare2, ImageUp } from "lucide-react";
 import { USER_API_URL } from "../../utils/constant";
 import toast from "react-hot-toast";
 
@@ -147,6 +147,14 @@ const Profile = () => {
             <UserSquare2 size={16} /> TAGGED
           </button>
         </div>
+          {
+            loggedInUser?.posts.length === 0 && 
+              isMyProfile ? (
+                  <p className="text-center mt-10">You have not created any posts yet.</p>
+              ) : (
+                  <p className="text-center mt-10">This user has not created any posts yet.</p>
+              )
+            }
         <div className="grid grid-cols-3 gap-1">
           {posts.map((post) => (
             <Link to={`/post/${post._id}`} key={post._id}>

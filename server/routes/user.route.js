@@ -1,5 +1,5 @@
 import express from 'express';
-import { getUserProfile, followUnfollowUser } from '../controllers/user.controller.js';
+import { getUserProfile, followUnfollowUser, searchUsers } from '../controllers/user.controller.js';
 import { protect } from '../middleware/auth.middleware.js';
 
 const router = express.Router();
@@ -10,5 +10,7 @@ router.use(protect);
 // The order is important: dynamic routes should come after static ones if they conflict
 router.get('/profile/:username', getUserProfile);
 router.post('/follow/:userId', followUnfollowUser);
+router.get('/search', searchUsers);
+
 
 export default router;

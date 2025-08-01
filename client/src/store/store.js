@@ -3,12 +3,14 @@ import storage from 'redux-persist/lib/storage';
 import authReducer from './slices/authSlice';
 import postReducer from './slices/postSlice';
 import profileReducer from './slices/ProfileSlice';
+import notificationReducer from './slices/notificationSlice';
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
 
 const rootReducer = combineReducers({
     auth: authReducer,
     posts : postReducer,
     profile : profileReducer,
+    notifications : notificationReducer,
 
 })
 

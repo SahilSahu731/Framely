@@ -1,3 +1,4 @@
+import Notification from "../models/notification.model.js";
 import Post from "../models/post.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { v2 as cloudinary } from 'cloudinary';
@@ -51,28 +52,38 @@ export const addComment = async (req, res) => {
     const newComment = {
       text,
       author: authorId,
+      createdAt: new Date(),
     };
 
-    // Find the post and push the new comment object into the comments array
     const updatedPost = await Post.findByIdAndUpdate(
       postId,
-      {
-        $push: { comments: newComment },
-      },
+      { $push: { comments: newComment } },
       { new: true }
-    ).populate('comments.author', 'username profilePicture'); 
+    );
 
     if (!updatedPost) {
       return res.status(404).json({ success: false, message: 'Post not found.' });
     }
+
+    // Create a notification for the post's author, but not for their own comment
+    if (updatedPost.author.toString() !== authorId.toString()) {
+        const notification = await Notification.create({
+            sender: authorId,
+            receiver: updatedPost.author,
+            type: 'comment',
+            contentId: postId,
+        });
+        req.io.to(updatedPost.author.toString()).emit('newNotification', notification);
+    }
     
-    // Return just the last added comment to the client for an optimistic update
+    // Populate the author details for the newly added comment to send to the client
     const addedComment = updatedPost.comments[updatedPost.comments.length - 1];
+    const populatedComment = await Post.populate(addedComment, { path: 'author', select: 'username profilePicture' });
 
     return res.status(201).json({
       success: true,
       message: 'Comment added.',
-      comment: addedComment,
+      comment: populatedComment,
     });
 
   } catch (error) {
@@ -80,6 +91,7 @@ export const addComment = async (req, res) => {
     return res.status(500).json({ success: false, message: 'Internal server error.' });
   }
 };
+
 
 export const getAllPosts = async (req, res) => {
   try {
@@ -109,7 +121,6 @@ export const toggleLikeOnPost = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Post not found.' });
     }
 
-    // Check if the user has already liked the post
     const isLiked = post.likes.includes(userId);
 
     if (isLiked) {
@@ -118,7 +129,21 @@ export const toggleLikeOnPost = async (req, res) => {
       res.status(200).json({ success: true, message: 'Post unliked.' });
     } else {
       // If not liked, like it
-      await Post.findByIdAndUpdate(postId, { $addToSet: { likes: userId } }); // $addToSet prevents duplicate likes
+      await Post.findByIdAndUpdate(postId, { $addToSet: { likes: userId } });
+
+      // Create a notification for the post's author, but not if they like their own post
+      if (post.author.toString() !== userId.toString()) {
+        const notification = await Notification.create({
+          sender: userId,
+          receiver: post.author,
+          type: 'like',
+          contentId: post._id,
+        });
+        
+        // Emit a real-time event to the specific receiver's "room"
+        req.io.to(post.author.toString()).emit('newNotification', notification);
+      }
+      
       res.status(200).json({ success: true, message: 'Post liked.' });
     }
   } catch (error) {
@@ -126,6 +151,7 @@ export const toggleLikeOnPost = async (req, res) => {
     return res.status(500).json({ success: false, message: 'Internal server error.' });
   }
 };
+
 
 export const deletePost = async (req, res) => {
   try {

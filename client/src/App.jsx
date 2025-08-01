@@ -14,6 +14,8 @@ import NotFoundPage from './components/NotFoundPage';
 import Profile from './pages/user/Profile';
 import EditProfilePage from './components/user/EditProfile';
 import SinglePost from './pages/SinglePost';
+import SearchPage from './pages/SearchPage';
+import NotificationPage from './pages/NotificationPage';
 
 // Route Protection
 // const ProtectedRoute = ({ children }) => {
@@ -52,6 +54,8 @@ function App() {
           <Route path = '*' element={<NotFoundPage/>} />
           <Route path = "/accounts/edit" element={<EditProfilePage />} />
           <Route path="/post/:postId" element={<SinglePost />} />
+          <Route path="/search" element={<SearchPage />} />
+          <Route path="/notifications" element={<NotificationPage />} />
         </Route>
 
 

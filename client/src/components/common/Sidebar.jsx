@@ -1,36 +1,67 @@
-import { useState } from 'react';
-import { NavLink, Link, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { logout } from '@/store/slices/authSlice';
+import { useState } from "react";
+import { NavLink, Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "@/store/slices/authSlice";
 import {
-  Home, Search, Compass, MessageCircle, PlusSquare, User,
-  HeartIcon, LogOut, Menu, Image, Film
-} from 'lucide-react';
+  Home,
+  Search,
+  Compass,
+  MessageCircle,
+  PlusSquare,
+  User,
+  HeartIcon,
+  LogOut,
+  Menu,
+  Image,
+  Film,
+} from "lucide-react";
+import useNotifications from "../../hooks/useNotifications";
+import { markAllAsRead } from "../../store/slices/notificationSlice";
+import axios from "axios";
+import { NOTIFICATION_API_URL } from "../../utils/constant";
+import NotificationPanel from "../notification/NotificationPanel";
 
 // The Sidebar now accepts a prop to open the modal
 const Sidebar = ({ openCreateModal }) => {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+  const { unreadCount } = useSelector((state) => state.notifications);
+  const [isNotificationPanelOpen, setNotificationPanelOpen] = useState(false);
+
   const navigate = useNavigate();
+
+  useNotifications();
 
   const handleLogout = () => {
     dispatch(logout());
-    navigate('/login');
+    navigate("/login");
   };
+
+  //  const handleNotificationClick = async () => {
+  //     setNotificationPanelOpen(!isNotificationPanelOpen);
+  //     // If there are unread notifications, mark them as read
+  //     if (unreadCount > 0 && !isNotificationPanelOpen) {
+  //         try {
+  //             await axios.post(`${NOTIFICATION_API_URL}/read`, {}, { withCredentials: true });
+  //             dispatch(markAllAsRead());
+  //         } catch (error) {
+  //             console.error("Failed to mark notifications as read", error);
+  //         }
+  //     }
+  // }
 
   // "Create" has been removed from this array to be handled separately
   const navLinks = [
-    { icon: <Home />, text: 'Home', path: '/' },
-    { icon: <Search />, text: 'Search', path: '/search' },
-    { icon: <Compass />, text: 'Explore', path: '/explore' },
-    { icon: <MessageCircle />, text: 'Messages', path: '/messages' },
-    { icon: <HeartIcon />, text: 'Notification', path: '/notification' },
+    { icon: <Home />, text: "Home", path: "/" },
+    { icon: <Search />, text: "Search", path: "/search" },
+    { icon: <Compass />, text: "Explore", path: "/explore" },
+    { icon: <MessageCircle />, text: "Messages", path: "/messages" },
   ];
 
-  const activeLinkStyle = "flex items-center mt-2 mb-2 space-x-4 py-3 px-2 rounded-md bg-gray-700";
-  const normalLinkStyle = "flex items-center mt-2 mb-2 space-x-4 py-3 px-2 rounded-md hover:bg-gray-700";
-
-
+  const activeLinkStyle =
+    "flex items-center mt-2 mb-2 space-x-4 py-3 px-2 rounded-md bg-gray-700";
+  const normalLinkStyle =
+    "flex items-center mt-2 mb-2 space-x-4 py-3 px-2 rounded-md hover:bg-gray-700";
 
   return (
     <aside className="w-80 fixed top-0 left-0 min-h-screen bg-gray-800 text-white p-4 flex flex-col">
@@ -51,43 +82,62 @@ const Sidebar = ({ openCreateModal }) => {
             <li key={link.text}>
               <NavLink
                 to={link.path}
-                className={({ isActive }) => isActive ? activeLinkStyle : normalLinkStyle}
+                className={({ isActive }) =>
+                  isActive ? activeLinkStyle : normalLinkStyle
+                }
               >
                 {link.icon}
                 <span className="font-semibold">{link.text}</span>
               </NavLink>
             </li>
           ))}
+            <li>
+            <NavLink to="/notifications" className={({ isActive }) => isActive ? activeLinkStyle : normalLinkStyle}>
+              <div className="relative">
+                <HeartIcon />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                    {unreadCount}
+                  </span>
+                )}
+              </div>
+              <span className="font-semibold ml-4">Notification</span>
+            </NavLink>
+          </li>
 
           {/* --- Create Button with Popover --- */}
           <li className="relative group">
-            <button
-              className={`${normalLinkStyle} w-full  `}
-            >
+            <button className={`${normalLinkStyle} w-full  `}>
               <PlusSquare />
               <span className="font-semibold">Create</span>
             </button>
-              <div className="absolute hidden group-hover:block top-0 group left-64 top-10  ml-2 w-56 bg-gray-700 rounded-lg shadow-lg py-2">
-                <button
-                  onClick={() => {
-                    openCreateModal(); // Call the function from props
-                  }}
-                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-600 flex justify-between items-center"
-                >
-                  Create Post <Image size={18} />
-                </button>
-                <button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-600 flex justify-between items-center text-gray-500 cursor-not-allowed">
-                  Add a Story <Film size={18} />
-                </button>
-              </div>
+            <div className="absolute hidden group-hover:block top-0 group left-64 top-10  ml-2 w-56 bg-gray-700 rounded-lg shadow-lg py-2">
+              <button
+                onClick={() => {
+                  openCreateModal(); // Call the function from props
+                }}
+                className="w-full text-left px-4 py-2 text-sm hover:bg-gray-600 flex justify-between items-center"
+              >
+                Create Post <Image size={18} />
+              </button>
+              <button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-600 flex justify-between items-center text-gray-500 cursor-not-allowed">
+                Add a Story <Film size={18} />
+              </button>
+            </div>
           </li>
 
           <li key="Profile">
             <NavLink
               to={`/profile/${user?.username}`}
-              className={({ isActive }) => isActive ? activeLinkStyle : normalLinkStyle}
+              className={({ isActive }) =>
+                isActive ? activeLinkStyle : normalLinkStyle
+              }
             >
-              <img src={user?.profilePicture} alt="Profile Picture" className="h-6 w-6 rounded-full" />
+              <img
+                src={user?.profilePicture}
+                alt="Profile Picture"
+                className="h-6 w-6 rounded-full"
+              />
               <span className="font-semibold">Profile</span>
             </NavLink>
           </li>
@@ -98,7 +148,10 @@ const Sidebar = ({ openCreateModal }) => {
           <Menu />
           <span>More</span>
         </button>
-        <button onClick={handleLogout} className="w-full text-left py-3 px-2 rounded-md hover:bg-gray-700 font-semibold flex items-center space-x-4">
+        <button
+          onClick={handleLogout}
+          className="w-full text-left py-3 px-2 rounded-md hover:bg-gray-700 font-semibold flex items-center space-x-4"
+        >
           <LogOut />
           <span>Logout</span>
         </button>
